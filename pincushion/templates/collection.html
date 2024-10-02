@@ -13,6 +13,8 @@
     <img src="../../images/pins/{{ pin.id }}.jpg">
     {% elif pin.type == 'video' %}
     <video src="../../video/pins/{{ pin.id }}.mp4" controls>
+    {% elif pin.type == 'audio' %}
+    <audio src="../../audio/pins/{{ pin.id }}.mp3" controls>
     {% endif %}
   </div>
   {% endfor %}
