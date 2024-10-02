@@ -1,0 +1,33 @@
+[project]
+name = "pincushion"
+version = "0.1.0"
+description = "An archiving tool for Historypin"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.32.3",
+    "tqdm>=4.66.5",
+    "click>=8.1.7",
+    "jinja2>=3.1.4",
+    "yt-dlp>=2024.9.27",
+]
+
+[project.scripts]
+pincushion = "pincushion:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.3.3",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pincushion"]
+
+[tool.pytest.ini_options]
+pythonpath = "."
+log_cli = true
+log_cli_level = "INFO"

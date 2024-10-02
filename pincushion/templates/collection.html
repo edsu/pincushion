@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block main %}
+<section class="collection">
+  <h1>{{ collection.title }}</h1>
+  <p class="description">{{ collection.description | safe }}</p>
+</section>
+
+<section class="gallery">
+  {% for pin in pins %}
+  <div class="gallery-item">
+    <div class="name">{{ pin.caption }}</div>
+    {% if pin.type == 'photo' %}
+    <img src="../../images/pins/{{ pin.id }}.jpg">
+    {% elif pin.type == 'video' %}
+    <video src="../../video/pins/{{ pin.id }}.mp4" controls>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}
