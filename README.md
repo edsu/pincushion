@@ -17,3 +17,5 @@ pincushion user 11670
 ```
 
 Open the `archive/index.html` file in your browser.
+
+[Historypin]: https://historypin.org
