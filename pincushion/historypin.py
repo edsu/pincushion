@@ -25,7 +25,7 @@ def get_listing(
     listing_type: str,
     item_type: Optional[str] = None,
     progress: bool = True,
-) -> Generator[dict]:
+) -> Generator[dict, None, None]:
     """
     Iterate through a Historypin listing for a user by type (projects or pin). For projects
     you need to further specify whether you want collections or tours.
