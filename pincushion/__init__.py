@@ -11,12 +11,13 @@ def cli():
     """
     Create an archive for Historypin resources.
     """
-    logging.basicConfig(filename='pincushion.log', level=logging.INFO)
+    logging.basicConfig(filename="pincushion.log", level=logging.INFO)
     pass
 
-@cli.command('user')
-@click.argument('user_id')
-@click.option('--archive-dir', default="archive")
+
+@cli.command("user")
+@click.argument("user_id")
+@click.option("--archive-dir", default="archive")
 def user(user_id: int, archive_dir: str):
     """
     Create an archive for a given Historypin User ID.
@@ -26,13 +27,13 @@ def user(user_id: int, archive_dir: str):
 
     data = historypin.get_data(user_id)
     data_path = archive_dir / "data.json"
-    json.dump(data, data_path.open('w'), indent=2)
+    json.dump(data, data_path.open("w"), indent=2)
 
     archive.Generator(archive_dir).generate()
 
 
 @cli.command()
-@click.argument('archive_dir')
+@click.argument("archive_dir")
 def generate(archive_dir):
     """
     Regenerate the archive using a directory containing the data.json.
