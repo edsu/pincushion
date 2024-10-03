@@ -22,6 +22,9 @@ build-backend = "hatchling.build"
 [tool.uv]
 dev-dependencies = [
     "pytest>=8.3.3",
+    "mypy>=1.11.2",
+    "types-requests>=2.32.0.20240914",
+    "types-tqdm>=4.66.0.20240417",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -31,3 +34,8 @@ packages = ["pincushion"]
 pythonpath = "."
 log_cli = true
 log_cli_level = "INFO"
+
+[[tool.mypy.overrides]]
+module = ["yt_dlp"]
+ignore_missing_imports = true
+

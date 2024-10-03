@@ -1,5 +1,6 @@
 import logging
 import time
+from typing import Optional, Generator, Dict, Any, Union
 
 import requests
 import tqdm
@@ -7,22 +8,29 @@ import tqdm
 logger = logging.getLogger(__name__)
 
 
-def get_data(user_id: int):
-    data = {}
+def get_data(user_id: int, progress=True):
+    data: Dict[str, Union[dict, list]] = {}
     data["user"] = get_json("user/get", {"id": user_id})
-    data["collections"] = list(get_listing(user_id, "projects", "collection"))
-    data["tours"] = list(get_listing(user_id, "projects", "tour"))
-    data["pins"] = list(get_listing(user_id, "pin"))
+    data["collections"] = list(
+        get_listing(user_id, "projects", "collection", progress=progress)
+    )
+    data["tours"] = list(get_listing(user_id, "projects", "tour", progress=progress))
+    data["pins"] = list(get_listing(user_id, "pin", progress=progress))
 
     return data
 
 
-def get_listing(user_id: int, listing_type: str, item_type=None, progress=True):
+def get_listing(
+    user_id: int,
+    listing_type: str,
+    item_type: Optional[str] = None,
+    progress: bool = True,
+) -> Generator[dict]:
     """
     Iterate through a Historypin listing for a user by type (projects or pin). For projects
     you need to further specify whether you want collections or tours.
     """
-    params = {"user": user_id, "page": 0, "limit": 100}
+    params: Dict[str, Any] = {"user": user_id, "page": 0, "limit": 100}
 
     if item_type is not None:
         params["type"] = item_type
