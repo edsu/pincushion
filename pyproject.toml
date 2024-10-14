@@ -25,6 +25,7 @@ dev-dependencies = [
     "mypy>=1.11.2",
     "types-requests>=2.32.0.20240914",
     "types-tqdm>=4.66.0.20240417",
+    "hatch>=1.13.0",
 ]
 
 [tool.hatch.build.targets.wheel]
