@@ -37,7 +37,7 @@ def get_listing(
 
     if progress:
         count = get_json(f"{listing_type}/listing", params)["count"]
-        desc = item_type or listing_type
+        desc = (item_type or listing_type) + "s"
         bar = tqdm.tqdm(desc=f"{desc:20}", total=count)
     else:
         bar = None
