@@ -1,6 +1,6 @@
 # pincushion
 
-*pincushion* is a command line tool for creating archives for resources on [Historypin]. It reads data from the Historypin API and writes a static website to a given directory. The file structure looks something like:
+*pincushion* is a command line tool for creating archives for resources on [Historypin]. It reads data from the [Historypin API] and writes a static website to a given directory. The file structure looks something like:
 
 ```
 archive
@@ -54,3 +54,4 @@ pincushion user --user-id 11670 --archive-path my-archive
 Open the `my-archive/index.html` file in your browser.
 
 [Historypin]: https://historypin.org
+[Historypin API]: https://historypin.github.io/api-docs/

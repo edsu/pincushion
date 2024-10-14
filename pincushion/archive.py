@@ -148,10 +148,8 @@ class Generator:
         return media_type
 
     def get_first_image_url(self, collection_slug):
-        print(f"getting first image for {collection_slug}")
         for pin in self.collection_pins(collection_slug):
             if self.get_media_type(pin) == 'image':
-                print(pin['display']['content'])
                 return pin['display']['content']
         return None
 
