@@ -35,7 +35,7 @@ archive
 └── user.jpg
 ```
 
-Each pin has its own directory, which contains the uploaded media (image, audio or video).
+Each pin has its own directory, which contains the uploaded media (image, audio or video). The `data.json` file is an aggregation of JSON data collected from the Historypin API, which is used to create the static site.
 
 ## Install
 
