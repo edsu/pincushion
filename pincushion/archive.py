@@ -27,7 +27,7 @@ class ArchiveGenerator:
 
         self.data = json.load((self.archive_dir / "data.json").open())
 
-    def generate(self):
+    def generate(self) -> None:
         self.download_media()
         self.write_index()
         self.write_collections()
@@ -45,7 +45,7 @@ class ArchiveGenerator:
             html = coll_tmpl.render(collection=coll, pins=pins)
             self.write(html, "collections", coll["slug"], "index.html")
             for pin in pins:
-                html = pin_tmpl.render(pin=pin, collection=coll, user=self.data['user'])
+                html = pin_tmpl.render(pin=pin, collection=coll, user=self.data["user"])
                 self.write(html, f"pins/{pin['id']}/index.html")
 
     def download_media(self) -> None:
@@ -91,8 +91,7 @@ class ArchiveGenerator:
         path = self.archive_dir / file_path
 
         if (
-            path.with_suffix(".mp3").is_file()
-            or path.with_suffix(".mp4").is_file()
+            path.with_suffix(".mp3").is_file() or path.with_suffix(".mp4").is_file()
         ) and not self.overwrite:
             logging.info(f"skipping download of {url} since it is already present")
             return

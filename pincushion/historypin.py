@@ -8,7 +8,7 @@ import tqdm
 logger = logging.getLogger(__name__)
 
 
-def get_data(user_id: int, progress=True):
+def get_data(user_id: int, progress: bool = True) -> dict:
     data: Dict[str, Union[dict, list]] = {}
     data["user"] = get_json("user/get", {"id": user_id})
     data["collections"] = list(
