@@ -55,6 +55,11 @@
     <dd><a href="{{ pin.link }}">{{ pin.link }}</a></dd>
     {% endif %}
 
+    {% if pin.type == "video" or pin.type == "audio" %}
+    <dt>Original Media Link</dt>
+    <dd><a href="{{ pin.display.content }}">{{ pin.display.content }}</a></dd>
+    {% endif %}
+
     {% if pin.tags %}
     <dt>Tags</dt>
     <dd>
@@ -93,6 +98,13 @@
     <dt>Rights Statement</dt>
     <dd>{{ pin.rights_statement }}</dd>
     {% endif %}
+
+    <dt>Historypin Link</dt>
+    <dd>
+      <a href="https://www.historypin.org/en/person/{{ user.id }}/explore/pin/{{ pin.id }}">
+        https://www.historypin.org/en/person/{{ user.id }}/explore/pin/{{ pin.id }}
+      </a>
+    </dd>
 
   </dl>
 </section>

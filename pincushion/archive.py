@@ -2,6 +2,7 @@ import json
 import logging
 import re
 from pathlib import Path
+from typing import Generator, Optional, List
 
 import jinja2
 import requests
@@ -15,12 +16,12 @@ env = jinja2.Environment(
 )
 
 
-class Generator:
-    # TODO: tags, places
+class ArchiveGenerator:
+    # TODO: tags, places, comments
 
-    def __init__(self, archive_dir, overwrite=False):
+    def __init__(self, archive_dir: Path, overwrite: bool = False):
         self.overwrite = overwrite
-        self.archive_dir = Path(archive_dir)
+        self.archive_dir = archive_dir
         if not self.archive_dir.is_dir():
             raise Exception(f"No such archive directory: {archive_dir}")
 
@@ -31,12 +32,12 @@ class Generator:
         self.write_index()
         self.write_collections()
 
-    def write_index(self):
+    def write_index(self) -> None:
         tmpl = env.get_template("index.html")
         html = tmpl.render(user=self.data["user"], collections=self.collections())
         (self.archive_dir / "index.html").open("w").write(html)
 
-    def write_collections(self):
+    def write_collections(self) -> None:
         coll_tmpl = env.get_template("collection.html")
         pin_tmpl = env.get_template("pin.html")
         for coll in self.collections():
@@ -44,10 +45,10 @@ class Generator:
             html = coll_tmpl.render(collection=coll, pins=pins)
             self.write(html, "collections", coll["slug"], "index.html")
             for pin in pins:
-                html = pin_tmpl.render(pin=pin, collection=coll)
+                html = pin_tmpl.render(pin=pin, collection=coll, user=self.data['user'])
                 self.write(html, f"pins/{pin['id']}/index.html")
 
-    def download_media(self):
+    def download_media(self) -> None:
         self.fetch_file(self.data["user"]["image"], "user.jpg")
         collections = list(self.collections())
         for coll in tqdm.tqdm(collections, desc="{:20}".format("collection media")):
@@ -56,11 +57,11 @@ class Generator:
                     coll["image_url"], f"collections/{coll['slug']}/image.jpg"
                 )
             # if the collection doesn't have an image use the first pin image
-            elif image_url := self.get_first_image_url(coll['slug']):
+            elif image_url := self.get_first_image_url(coll["slug"]):
                 self.fetch_file(image_url, f"collections/{coll['slug']}/image.jpg")
 
         for pin in tqdm.tqdm(self.data["pins"], desc="{:20}".format("pin media")):
-            url = pin['display']['content']
+            url = pin["display"]["content"]
             media_type = self.get_media_type(pin)
 
             if media_type == "image":
@@ -68,28 +69,32 @@ class Generator:
             else:
                 self.fetch_media(url, media_type, f"pins/{pin['id']}/media.%(ext)s")
 
-    def fetch_file(self, url_path, file_path):
+    def fetch_file(self, url_path: str, file_path: str) -> None:
         logger.info(f"downloading {url_path}")
-        file_path = self.archive_dir / file_path
-        file_path.parent.mkdir(exist_ok=True, parents=True)
+        path = self.archive_dir / file_path
+        path.parent.mkdir(exist_ok=True, parents=True)
         url = "https://historypin.org" + url_path
 
-        if file_path.is_file() and not self.overwrite:
+        if path.is_file() and not self.overwrite:
             logging.info(f"skipping download of {url} since it is already present")
             return
 
-        logger.info(f"saving {url} to {file_path}")
+        logger.info(f"saving {url} to {path}")
         resp = requests.get(url)
-        resp.raise_for_status()
+        if resp.status_code == 200:
+            path.open("wb").write(resp.content)
+        else:
+            logger.error(f"received {resp.status_code} when fetching {url}")
 
-        file_path.open("wb").write(resp.content)
-
-    def fetch_media(self, url, media_type, file_path):
+    def fetch_media(self, url: str, media_type: str, file_path: str) -> None:
         logger.info(f"downloading media {url}")
-        file_path = self.archive_dir / file_path
+        path = self.archive_dir / file_path
 
-        if (file_path.with_suffix('.mp3').is_file() or file_path.with_suffix('.mp4').is_file()) and not self.overwrite:
-            logging.info(f'skipping download of {url} since it is already present')
+        if (
+            path.with_suffix(".mp3").is_file()
+            or path.with_suffix(".mp4").is_file()
+        ) and not self.overwrite:
+            logging.info(f"skipping download of {url} since it is already present")
             return
 
         opts = {
@@ -98,11 +103,11 @@ class Generator:
             "logger": logger,
             "format": "best/bestvideo+bestaudio",
             "audio_format": "mp3",
-            "outtmpl": {"default": str(file_path)},
+            "outtmpl": {"default": str(path)},
         }
 
         # convert to mp3 or mp4 if needed
-        if media_type == 'video':
+        if media_type == "video":
             opts["postprocessors"] = [
                 {"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}
             ]
@@ -118,39 +123,37 @@ class Generator:
             except Exception as e:
                 logger.warn(f"Unable to download media {url}: {e}")
 
-    def write(self, html, *path_parts):
+    def write(self, html: str, *path_parts: str) -> None:
         path = self.archive_dir.joinpath(*path_parts)
         path.parent.mkdir(exist_ok=True, parents=True)
         path.open("w").write(html)
 
-    def collections(self):
+    def collections(self) -> Generator[dict, None, None]:
         for coll in self.data["collections"]:
             if len(list(self.collection_pins(coll["slug"]))) > 0:
                 yield coll
 
-    def collection_pins(self, collection_slug):
+    def collection_pins(self, collection_slug: str) -> Generator[dict, None, None]:
         for pin in self.data["pins"]:
             if collection_slug in [p["slug"] for p in pin["repinned_projects"]]:
                 yield pin
 
-    def get_media_type(self, pin):
+    def get_media_type(self, pin: dict) -> str:
         # ideally we could just use pin['type'] but pins can sometimes have type=video but be from soundcloud, sigh
         url = pin["display"]["content"]
-        media_type = pin['type']
+        media_type = pin["type"]
 
-        if media_type == 'photo':
-            media_type = 'image'
-        elif re.search('youtu.be|youtube|vimeo', url):
-            media_type = 'video'
-        elif re.search('soundcloud|audioboom', url):
-            media_type = 'audio'
+        if media_type == "photo":
+            media_type = "image"
+        elif re.search("youtu.be|youtube|vimeo", url):
+            media_type = "video"
+        elif re.search("soundcloud|audioboom", url):
+            media_type = "audio"
 
         return media_type
 
-    def get_first_image_url(self, collection_slug):
+    def get_first_image_url(self, collection_slug: str) -> Optional[str]:
         for pin in self.collection_pins(collection_slug):
-            if self.get_media_type(pin) == 'image':
-                return pin['display']['content']
+            if self.get_media_type(pin) == "image":
+                return pin["display"]["content"]
         return None
-
-

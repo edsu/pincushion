@@ -2,6 +2,7 @@ import json
 import logging
 import pathlib
 from io import TextIOWrapper
+from pathlib import Path
 
 import click
 from pincushion import historypin, archive
@@ -36,7 +37,7 @@ def user(user_id: int, archive_path: click.Path):
     data_path = archive_dir / "data.json"
     json.dump(data, data_path.open("w"), indent=2)
 
-    archive.Generator(archive_dir).generate()
+    archive.ArchiveGenerator(archive_dir).generate()
 
 
 @cli.command()
@@ -44,10 +45,10 @@ def user(user_id: int, archive_path: click.Path):
 def regenerate(archive_path: str):
     """
     Regenerate the archive using a directory containing a data.json file. This
-    can be useful if improvements are made to the static site generation, and 
+    can be useful if improvements are made to the static site generation, and
     you don't want to have to refetch all the data from Historypin.
     """
-    generator = archive.Generator(archive_path)
+    generator = archive.ArchiveGenerator(Path(archive_path))
     generator.generate()
 
 
@@ -65,12 +66,16 @@ def data(user_id: int, output: TextIOWrapper):
 
 
 @cli.command("media")
-@click.option("--archive-path", help="An existing archive directory", type=click.Path(file_okay=False))
+@click.option(
+    "--archive-path",
+    help="An existing archive directory",
+    type=click.Path(file_okay=False),
+)
 def media(archive_path: str):
     """
     Download the media for a given archive. This can be useful for testing.
     """
-    generator = archive.Generator(archive_path)
+    generator = archive.ArchiveGenerator(Path(archive_path))
     generator.download_media()
 
 
