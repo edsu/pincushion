@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block main %}
+<section class="pin">
+  <h1>
+    <a href="../../index.html">Collections</a> &gt;
+    <a href="../../collections/{{ collection.slug }}/index.html">{{ collection.title }}</a> &gt; 
+    {{ pin.caption }}
+  </h1>
+
+  <div class="media">
+  {% if pin.type == 'photo' %}
+  <img src="image.jpg">
+  {% elif pin.type == 'video' %}
+  <video src="media.mp4" controls>
+  {% elif pin.type == 'audio' %}
+  <audio src="media.mp3" controls>
+  {% endif %}
+  </div>
+
+</section>
+
+<section class="metadata">
+
+  <dl>
+
+    <dt>Description</dt>
+    <dd>{{ pin.description | safe }}</dd>
+
+    {% if pin.location %}
+    <dt>Location</dt>
+    <dd>
+     {{ pin.location.raw }} 
+      <a target="_blank" href="http://www.openstreetmap.org/?mlat={{ pin.location.lat }}&mlon={{ pin.location.lng }}&lat={{ pin.location.lat }}&lon={{ pin.location.lng }}&zoom={{ pin.location.zoom or 11 }}&layers=M">
+        ({{ pin.location.lat }}, {{ pin.location.lng }})
+      </a>
+    </dd>
+    {% endif %}
+
+    {% if pin.places %}
+    <dt>Places</dt>
+    <dd>
+      {% for place in pin.places %}
+        {{ place.title }}{{ ", " if not loop.last else "" }}
+      {% endfor %}
+    </dd>
+    {% endif %}
+
+    {% if pin.license %}
+    <dt>License</dt>
+    <dd><a href="{{ pin.license_key }}">{{ pin.license }}</a></dd>
+    {% endif %}
+
+    {% if pin.link %}
+    <dt>Link</dt>
+    <dd><a href="{{ pin.link }}">{{ pin.link }}</a></dd>
+    {% endif %}
+
+    {% if pin.tags %}
+    <dt>Tags</dt>
+    <dd>
+      {% for tag in pin.tags %}
+        {{ tag.text }}{{ ", " if not loop.last else "" }}
+      {% endfor %}
+    </dd>
+    {% endif %}
+
+    {% if pin.date_added %}
+    <dt>Date Added</dt>
+    <dd>{{ pin.date_added }}</dd>
+    {% endif %}
+
+    {% if pin.date_taken %}
+    <dt>Date Taken</dt>
+    <dd>{{ pin.date_taken }}</dd>
+    {% endif %}
+
+    {% if pin.author %}
+    <dt>Author</dt>
+    <dd>{{ pin.author }}</dd>
+    {% endif %}
+
+    {% if pin.repository %}
+    <dt>Repository</dt>
+    <dd>{{ pin.repository }}</dd>
+    {% endif %}
+
+    {% if pin.notes %}
+    <dt>Notes</dt>
+    <dd>{{ pin.notes }}</dd>
+    {% endif %}
+
+    {% if pin.rights_statement %}
+    <dt>Rights Statement</dt>
+    <dd>{{ pin.rights_statement }}</dd>
+    {% endif %}
+
+  </dl>
+</section>
+
+{% endblock %}

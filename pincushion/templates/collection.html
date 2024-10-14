@@ -1,22 +1,24 @@
 {% extends "base.html" %}
 {% block main %}
 <section class="collection">
-  <h1>{{ collection.title }}</h1>
+  <h1><a href="../../index.html">Collections</a> &gt; {{ collection.title }}</h1>
   <p class="description">{{ collection.description | safe }}</p>
 </section>
 
 <section class="gallery">
   {% for pin in pins %}
+  <a href="../../pins/{{ pin.id }}/index.html">
   <div class="gallery-item">
     <div class="name">{{ pin.caption }}</div>
     {% if pin.type == 'photo' %}
-    <img src="../../images/pins/{{ pin.id }}.jpg">
+    <img src="../../pins/{{ pin.id }}/image.jpg">
     {% elif pin.type == 'video' %}
-    <video src="../../video/pins/{{ pin.id }}.mp4" controls>
+    <video src="../../pins/{{ pin.id }}/media.mp4" controls>
     {% elif pin.type == 'audio' %}
-    <audio src="../../audio/pins/{{ pin.id }}.mp3" controls>
+    <audio src="../../pins/{{ pin.id }}/media.mp3" controls>
     {% endif %}
   </div>
+  </a>
   {% endfor %}
 </section>
 {% endblock %}
