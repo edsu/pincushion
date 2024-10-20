@@ -3,6 +3,7 @@ import logging
 import re
 from collections import defaultdict
 from pathlib import Path
+from shutil import copytree, rmtree
 from typing import Generator, Optional, List
 
 import jinja2
@@ -33,6 +34,7 @@ class ArchiveGenerator:
         self.write_index()
         self.write_collections()
         self.write_tags()
+        self.write_map()
 
     def write_index(self) -> None:
         tmpl = env.get_template("index.html")
@@ -68,6 +70,42 @@ class ArchiveGenerator:
         for tag, pins in tag_index.items():
             html = tag_tmpl.render(tag=tag, pins=pins)
             self.write(html, "tags", f"{tag}.html")
+
+    def write_map(self) -> None:
+        geojson = {
+            "type": "FeatureCollection",
+            "features": []
+        }
+
+        for pin in self.data['pins']:
+            if pin['location']['lat']:
+                geojson["features"].append({
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            pin['location']['lng'],
+                            pin['location']['lat']
+                        ]
+                    },
+                    "properties": {
+                        "name": pin["caption"],
+                        "popupContent": pin["description"],
+                        "id": pin["id"]
+                    }
+                })
+
+        self.write(json.dumps(geojson, indent=2), "map", "pins.geojson")
+
+        tmpl = env.get_template("map.html")
+        html = tmpl.render(user=self.data['user'], geojson=json.dumps(geojson, indent=2))
+        self.write(html, "map", "index.html")
+
+        leaflet = Path(__file__).parent / "templates" / "leaflet"
+        leaflet_dir = self.archive_dir / "map" / "leaflet"
+        if leaflet_dir.is_dir():
+            rmtree(leaflet_dir)
+        copytree(leaflet, leaflet_dir)
 
     def download_media(self) -> None:
         self.fetch_file(self.data["user"]["image"], "user.jpg")

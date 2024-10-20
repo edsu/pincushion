@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="leaflet/leaflet.css">
+<link rel="stylesheet" href="leaflet/leaflet.markercluster/MarkerCluster.css">
+<link rel="stylesheet" href="leaflet/leaflet.markercluster/MarkerCluster.Default.css">
+<script src="leaflet/leaflet.js"></script>
+<script src="leaflet/leaflet.markercluster/leaflet.markercluster.js"></script>
+<style>
+#map {
+  height: 800px;
+  width: 1200px;
+}
+</style>
+{% endblock %}
+
+{% block main %}
+<div id="map"></div>
+<script>
+  let pins = {{ geojson | safe }};
+  let map = L.map('map', {zoomSnap: 0.5});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+  let markers = L.markerClusterGroup();
+
+  for (let i = 0; i < pins.features.length; i++) {
+    let pin = pins.features[i];
+    let marker = L.marker(
+      new L.LatLng(
+        pin.geometry.coordinates[1],
+        pin.geometry.coordinates[0]
+      ),
+      pin.properties.name
+    );
+    marker.bindPopup(
+      `<a target="_blank" href="../pins/${pin.properties.id}/index.html">
+         ${pin.properties.name}
+       </a>
+      `
+    );
+    markers.addLayer(marker);
+  }
+
+  map.addLayer(markers);
+
+  if (window.location.hash) {
+    let pinId = parseInt(window.location.hash.replace('#', ''));
+    let pin = null;
+    for (pin of pins.features) {
+      if (pin.properties.id == pinId) {
+        map.setView([pin.geometry.coordinates[1], pin.geometry.coordinates[0]], 18);
+        break;
+      }
+    }
+  } else {
+    let center = markers.getBounds().getCenter();
+    map.setView([center.lat, center.lng], 5);
+    map.fitBounds(markers.getBounds());
+  }
+
+</script>
+{% endblock %}
+
+

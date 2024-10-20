@@ -47,9 +47,9 @@
     <dt>Location</dt>
     <dd>
      {{ pin.location.raw }} 
-      <a target="_blank" href="http://www.openstreetmap.org/?mlat={{ pin.location.lat }}&mlon={{ pin.location.lng }}&lat={{ pin.location.lat }}&lon={{ pin.location.lng }}&zoom={{ pin.location.zoom or 11 }}&layers=M">
+     <a href="../../map/index.html#{{ pin.id }}">
         ({{ pin.location.lat }}, {{ pin.location.lng }})
-      </a>
+     </a>
     </dd>
     {% endif %}
 
