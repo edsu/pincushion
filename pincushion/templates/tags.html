@@ -1,7 +1,13 @@
 {% extends "base.html" %}
+
+{% block breadcrumb %}
+<ul>
+  <li><a href="../index.html">{{ user.name }}</a> &gt; Tags</li>
+</ul>
+{% endblock %}
+
 {% block main %}
 <section class="breadcrumb">
-  <h1><a href="../index.html">Collections</a> &gt; Tags</h1>
 </section>
 
 <div class="tags">

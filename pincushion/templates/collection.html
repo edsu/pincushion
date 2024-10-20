@@ -1,9 +1,14 @@
 {% extends "base.html" %}
+
+{% block breadcrumb %}
+<ul>
+  <li><a href="../../index.html">{{ user.name }}</a></li>
+  <li>{{ collection.title }}</li>
+</ul>
+{% endblock %}
+
 {% block main %}
-<section class="collection">
-  <h1><a href="../../index.html">Collections</a> &gt; {{ collection.title }}</h1>
-  <p class="description">{{ collection.description | safe }}</p>
-</section>
+<p class="description">{{ collection.description | safe }}</p>
 
 <section class="gallery">
   {% for pin in pins %}

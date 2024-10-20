@@ -46,10 +46,20 @@ class ArchiveGenerator:
         pin_tmpl = env.get_template("pin.html")
         for coll in self.collections():
             pins = list(self.collection_pins(coll["slug"]))
-            html = coll_tmpl.render(collection=coll, pins=pins)
+            html = coll_tmpl.render(
+                collection=coll,
+                pins=pins,
+                user=self.data['user'],
+                title=coll['title']
+            )
             self.write(html, "collections", coll["slug"], "index.html")
             for pin in pins:
-                html = pin_tmpl.render(pin=pin, collection=coll, user=self.data["user"])
+                html = pin_tmpl.render(
+                    pin=pin,
+                    collection=coll,
+                    user=self.data["user"],
+                    title=pin['caption']
+                )
                 self.write(html, f"pins/{pin['id']}/index.html")
 
     def write_tags(self) -> None:
@@ -62,13 +72,20 @@ class ArchiveGenerator:
         tags_tmpl = env.get_template("tags.html")
         html = tags_tmpl.render(
             tags=sorted(tag_index.keys()),
-            tag_index=tag_index
+            tag_index=tag_index,
+            user=self.data['user'],
+            title="Tags"
         )
         self.write(html, "tags", "index.html")
 
         tag_tmpl = env.get_template("tag.html")
         for tag, pins in tag_index.items():
-            html = tag_tmpl.render(tag=tag, pins=pins)
+            html = tag_tmpl.render(
+                tag=tag,
+                pins=pins,
+                user=self.data['user'],
+                title=f"Tag {tag}"
+            )
             self.write(html, "tags", f"{tag}.html")
 
     def write_map(self) -> None:

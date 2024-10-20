@@ -2,7 +2,7 @@
 <html>
   <head>
     {% block head %}
-    <title>Pincushion</title>
+    <title>Pincushion: {{ title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% endblock %}
     <style>
@@ -18,10 +18,29 @@
       font-size: 1.4em;
     }
 
+    nav {
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+
+    .breadcrumb ul {
+      display: flex;
+      flex-wrap: wrap;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .breadcrumb li:not(:last-child)::after {
+      display: inline-block;
+      margin: 0 .25rem;
+      content: ">";
+    }
+
     .gallery {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      align-items: center;
+      align-items: start;
     }
 
     .gallery .gallery-item {
@@ -140,6 +159,9 @@
     </style>
   </head>
   <body>
+    <nav aria-label="Breadcrumb" class="breadcrumb">
+      {% block breadcrumb %}{% endblock %}
+    </nav>
     <main>
       {% block main %}
       {% endblock %}

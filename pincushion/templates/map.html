@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 
+{% block breadcrumb %}
+<ul>
+  <li><a href="../index.html">{{ user.name }}</a></li>
+  <li>Map</li>
+</ul>
+{% endblock %}
+
 {% block head %}
 <link rel="stylesheet" href="leaflet/leaflet.css">
 <link rel="stylesheet" href="leaflet/leaflet.markercluster/MarkerCluster.css">
@@ -8,8 +15,8 @@
 <script src="leaflet/leaflet.markercluster/leaflet.markercluster.js"></script>
 <style>
 #map {
-  height: 800px;
-  width: 1200px;
+  width: 100%;
+  min-height: 95vh;
 }
 </style>
 {% endblock %}
@@ -43,6 +50,7 @@
 
   map.addLayer(markers);
 
+  // position the map on a specific pin if one is in the URL
   if (window.location.hash) {
     let pinId = parseInt(window.location.hash.replace('#', ''));
     let pin = null;

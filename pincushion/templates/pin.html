@@ -1,12 +1,15 @@
 {% extends "base.html" %}
+
+{% block breadcrumb %}
+<ul>
+  <li><a href="../../index.html">{{ user.name }}</a></li>
+  <li><a href="../../collections/{{ collection.slug }}/index.html">{{ collection.title }}</a></li>
+  <li>{{ pin.caption }}</li>
+</ul>
+{% endblock %}
+
 {% block main %}
 <section class="pin">
-  <h1>
-    <a href="../../index.html">Collections</a> &gt;
-    <a href="../../collections/{{ collection.slug }}/index.html">{{ collection.title }}</a> &gt; 
-    {{ pin.caption }}
-  </h1>
-
   <div class="media">
   {% if pin.type == 'photo' %}
   <img src="image.jpg">
@@ -16,28 +19,27 @@
   <audio src="media.mp3" controls>
   {% endif %}
   </div>
-
 </section>
 
-<section>
-
+<section class="description">
   <h2>Description</h2>
   <p class="description">
     {{ pin.description | safe }}
   </p>
-
-  {% if pin.comments %}
-  <h2>Comments</h2>
-  {% for comment in pin.comments %}
-  <div class="comment">
-    <span class="name">{{ comment.user_name }}</span><br>
-    <span class="created">{{ comment.date_formated }}</span><br>
-    <span class="content">{{ comment['copy'] | safe }}</span>
-  </div>
-  {% endfor %}
-  {% endif %}
-
 </section>
+
+{% if pin.comments %}
+<section class="comments">
+<h2>Comments</h2>
+{% for comment in pin.comments %}
+<div class="comment">
+  <span class="name">{{ comment.user_name }}</span><br>
+  <span class="created">{{ comment.date_formated }}</span><br>
+  <span class="content">{{ comment['copy'] | safe }}</span>
+</div>
+{% endfor %}
+</section>
+{% endif %}
 
 <section class="metadata">
 
@@ -45,7 +47,7 @@
 
     {% if pin.location %}
     <dt>Location</dt>
-    <dd>
+    <dd id="location">
      {{ pin.location.raw }} 
      <a href="../../map/index.html#{{ pin.id }}">
         ({{ pin.location.lat }}, {{ pin.location.lng }})
@@ -101,7 +103,7 @@
     <dd>{{ pin.author }}</dd>
     {% endif %}
 
-    {% if pin.repository %}
+    {% if pin.repository and pin.repository != " " %}
     <dt>Repository</dt>
     <dd>{{ pin.repository }}</dd>
     {% endif %}
@@ -111,7 +113,7 @@
     <dd>{{ pin.notes }}</dd>
     {% endif %}
 
-    {% if pin.rights_statement %}
+    {% if pin.rights_statement  and pin.rights_statement != " " %}
     <dt>Rights Statement</dt>
     <dd>{{ pin.rights_statement }}</dd>
     {% endif %}
@@ -125,5 +127,14 @@
 
   </dl>
 </section>
+
+<script>
+  window.addEventListener("load", (event) => {
+    if (! navigator.onLine) { 
+      let location = document.getElementById('location');
+      location.innerHTML = location.textContent + "<br>Connect to the Internet to view map.";
+    }
+  });
+</script>
 
 {% endblock %}
