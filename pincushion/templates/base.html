@@ -76,6 +76,37 @@
       margin-bottom: 20px;
     }
 
+    .comment {
+      border: 1px groove #ddd;
+      padding: 8px;
+      max-width: 800px;
+      border-radius: 5px;
+    }
+
+    .comment .name {
+      text-decoration: underline;
+    }
+
+    .comment .created {
+      color: gray;
+    }
+
+    .tags {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      margin: 5px;
+      padding: 5px;
+      border: 1px groove #ddd;
+    }
+
+    .tag:hover {
+      background: pink;
+    }
+
     /* Mobile Devices */
 
     @media only screen and (max-width: 600px) {
@@ -103,6 +134,7 @@
       dl {
         columns: 1;
       }
+
     }
 
     </style>

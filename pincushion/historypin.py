@@ -17,6 +17,8 @@ def get_data(user_id: int, progress: bool = True) -> dict:
     data["tours"] = list(get_listing(user_id, "projects", "tour", progress=progress))
     data["pins"] = list(get_listing(user_id, "pin", progress=progress))
 
+    add_comments(data["pins"])
+
     return data
 
 
@@ -64,3 +66,12 @@ def get_json(api_path: str, params: dict, sleep=0.5) -> dict:
     url = f"https://www.historypin.org/en/api/{api_path}.json"
     logger.info(f"fetching {url} {params}")
     return requests.get(url, params=params).json()
+
+
+def add_comments(pins, progress: bool=True) -> None:
+    if progress:
+        bar = tqdm.tqdm(desc="{:20}".format("comments"), total=len(pins))
+    for pin in pins:
+        if bar:
+            bar.update(1)
+        pin['comments'] = get_json('comments/get', {"item_id": pin['id']})['comments']

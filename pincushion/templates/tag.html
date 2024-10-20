@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block main %}
+<section class="breadcrumb">
+  <h1><a href="../index.html">Collections</a> &gt; 
+      <a href="index.html">Tags</a> &gt;
+      {{ tag }}
+  </h1>
+</section>
+
+<p>Pins that are tagged with <strong><em>{{ tag }}</em></strong>.</p>
+
+<section class="gallery">
+  {% for pin in pins %}
+  <a href="../pins/{{ pin.id }}/index.html">
+  <div class="gallery-item">
+    <div class="name">{{ pin.caption }}</div>
+    {% if pin.type == 'photo' %}
+    <img src="../pins/{{ pin.id }}/image.jpg">
+    {% elif pin.type == 'video' %}
+    <video src="../pins/{{ pin.id }}/media.mp4" controls>
+    {% elif pin.type == 'audio' %}
+    <audio src="../pins/{{ pin.id }}/media.mp3" controls>
+    {% endif %}
+  </div>
+  </a>
+  {% endfor %}
+</section>
+
+{% endblock %}

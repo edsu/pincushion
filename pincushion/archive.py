@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from collections import defaultdict
 from pathlib import Path
 from typing import Generator, Optional, List
 
@@ -31,6 +32,7 @@ class ArchiveGenerator:
         self.download_media()
         self.write_index()
         self.write_collections()
+        self.write_tags()
 
     def write_index(self) -> None:
         tmpl = env.get_template("index.html")
@@ -47,6 +49,25 @@ class ArchiveGenerator:
             for pin in pins:
                 html = pin_tmpl.render(pin=pin, collection=coll, user=self.data["user"])
                 self.write(html, f"pins/{pin['id']}/index.html")
+
+    def write_tags(self) -> None:
+        tag_index = defaultdict(list)
+        for pin in self.data['pins']:
+            for tag in pin['tags']:
+                text = tag['text']
+                tag_index[text].append(pin)
+
+        tags_tmpl = env.get_template("tags.html")
+        html = tags_tmpl.render(
+            tags=sorted(tag_index.keys()),
+            tag_index=tag_index
+        )
+        self.write(html, "tags", "index.html")
+
+        tag_tmpl = env.get_template("tag.html")
+        for tag, pins in tag_index.items():
+            html = tag_tmpl.render(tag=tag, pins=pins)
+            self.write(html, "tags", f"{tag}.html")
 
     def download_media(self) -> None:
         self.fetch_file(self.data["user"]["image"], "user.jpg")
@@ -76,7 +97,7 @@ class ArchiveGenerator:
         url = "https://historypin.org" + url_path
 
         if path.is_file() and not self.overwrite:
-            logging.info(f"skipping download of {url} since it is already present")
+            logger.info(f"skipping download of {url} since it is already present")
             return
 
         logger.info(f"saving {url} to {path}")
@@ -93,7 +114,7 @@ class ArchiveGenerator:
         if (
             path.with_suffix(".mp3").is_file() or path.with_suffix(".mp4").is_file()
         ) and not self.overwrite:
-            logging.info(f"skipping download of {url} since it is already present")
+            logger.info(f"skipping download of {url} since it is already present")
             return
 
         opts = {

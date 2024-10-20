@@ -19,12 +19,29 @@
 
 </section>
 
+<section>
+
+  <h2>Description</h2>
+  <p class="description">
+    {{ pin.description | safe }}
+  </p>
+
+  {% if pin.comments %}
+  <h2>Comments</h2>
+  {% for comment in pin.comments %}
+  <div class="comment">
+    <span class="name">{{ comment.user_name }}</span><br>
+    <span class="created">{{ comment.date_formated }}</span><br>
+    <span class="content">{{ comment['copy'] | safe }}</span>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+</section>
+
 <section class="metadata">
 
   <dl>
-
-    <dt>Description</dt>
-    <dd>{{ pin.description | safe }}</dd>
 
     {% if pin.location %}
     <dt>Location</dt>
@@ -64,7 +81,7 @@
     <dt>Tags</dt>
     <dd>
       {% for tag in pin.tags %}
-        {{ tag.text }}{{ ", " if not loop.last else "" }}
+      <a href="../../tags/{{ tag.text }}.html">{{ tag.text }}</a>{{ ", " if not loop.last else "" }}
       {% endfor %}
     </dd>
     {% endif %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block main %}
+<section class="breadcrumb">
+  <h1><a href="../index.html">Collections</a> &gt; Tags</h1>
+</section>
+
+<div class="tags">
+{% for tag in tags %}
+<div class="tag">
+  <a href="{{ tag }}.html">
+    {{ tag }}
+  </a> 
+  ({{ tag_index[tag]|length }})
+</div>
+{% endfor %}
+</div>
+
+{% endblock %}
+
+
