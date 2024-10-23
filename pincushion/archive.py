@@ -19,8 +19,6 @@ env = jinja2.Environment(
 
 
 class ArchiveGenerator:
-    # TODO: tags, places, comments
-
     def __init__(self, archive_dir: Path, overwrite: bool = False):
         self.overwrite = overwrite
         self.archive_dir = archive_dir
@@ -66,7 +64,8 @@ class ArchiveGenerator:
         tag_index = defaultdict(list)
         for pin in self.data['pins']:
             for tag in pin['tags']:
-                text = tag['text']
+                # yes, we've noticed some nulls in tags
+                text = tag['text'].replace('\0', '')
                 tag_index[text].append(pin)
 
         tags_tmpl = env.get_template("tags.html")
